@@ -1,12 +1,14 @@
 #include "excelreader.h"
 
+#include <QFileInfo>
 #include <qregularexpression.h>
 
-ExcelReader::ExcelReader(const QString &path)
+ExcelReader::ExcelReader(const QFile &file)
 {
     excel = new QAxObject("Excel.Application", NULL);
     workbooks = excel->querySubObject("WorkBooks");
-    workbooks->dynamicCall("Open (const QString&)", path);
+    workbooks->dynamicCall("Open (const QString&)",
+                           QFileInfo(file).absoluteFilePath());
     workbook = excel->querySubObject("ActiveWorkBook");
     sheets = workbook->querySubObject("Worksheets");
     sheet = sheets->querySubObject("Item(int)", 1);
@@ -23,11 +25,6 @@ ExcelReader::~ExcelReader()
     delete workbook;
     delete workbooks;
     delete excel;
-}
-
-void ExcelReader::setPath(const QString &value)
-{
-    path = value;
 }
 
 int ExcelReader::sheetsCount()
@@ -80,9 +77,4 @@ int ExcelReader::match(const QString &range, const QString &lookupValue)
     }
     delete rng;
     return res;
-}
-
-QString ExcelReader::getPath() const
-{
-    return path;
 }

@@ -2,6 +2,7 @@
 #define EXCELREADER_H
 
 #include <qaxobject.h>
+#include <qfile.h>
 
 class ExcelReader
 {
@@ -16,11 +17,8 @@ private:
     QString path;
 
 public:
-    ExcelReader(const QString &path);
+    ExcelReader(const QFile &file);
     ~ExcelReader();
-
-    QString getPath() const;
-    void setPath(const QString &value);
 
     int sheetsCount(); /* кол-во листов в документе */
     int rowCount(); /* кол-во строк активного листа */
