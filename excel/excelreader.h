@@ -15,7 +15,8 @@ private:
     QAxObject *usedRange;
 
     QString path;
-
+private:
+    char *strRangeToChar(const QString &str) const;
 public:
     ExcelReader(const QFile &file);
     ~ExcelReader();
@@ -28,6 +29,7 @@ public:
     /* запись содержимого в ячейку */
     void writeCell(int row, int column,
                    const QVariant &value) const;
+    void deleteRange(const QString &range) const;
     void save() const;
 
     /*

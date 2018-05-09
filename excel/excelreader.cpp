@@ -3,6 +3,8 @@
 #include <QFileInfo>
 #include <qregularexpression.h>
 
+#include <qdebug.h>
+
 ExcelReader::ExcelReader(const QFile &file)
 {
     excel = new QAxObject("Excel.Application", NULL);
@@ -65,6 +67,13 @@ void ExcelReader::writeCell(int row, int column, const QVariant &value) const
     delete cell;
 }
 
+void ExcelReader::deleteRange(const QString &range) const
+{
+    QAxObject *rng = sheet->querySubObject("Range(const QVariant&)", range);
+    rng->dynamicCall("Delete()");
+    delete rng;
+}
+
 void ExcelReader::save() const
 {
     workbook->dynamicCall("Save()");
@@ -72,9 +81,7 @@ void ExcelReader::save() const
 
 int ExcelReader::match(const QString &range, const QString &lookupValue) const
 {
-    QString str = "Range(" + range + ")";
-    char *val = (char*)str.toUtf8().data();
-    QAxObject *rng = sheet->querySubObject(val);
+    QAxObject *rng = sheet->querySubObject("Range(const QVariant&)", range);
     QAxObject *set = rng->querySubObject("Find(const QString&)", lookupValue);
 
     int res = -1;
@@ -90,4 +97,10 @@ int ExcelReader::match(const QString &range, const QString &lookupValue) const
     }
     delete rng;
     return res;
+}
+
+char *ExcelReader::strRangeToChar(const QString &str) const
+{
+    QString range = "Range(" + str + ")";
+    return (char*)range.toUtf8().data();
 }

@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
         qDebug() << "cell value:" << er.readCell(match, COLUMN);
 
         er.writeCell(4,4, "test");
+        er.deleteRange("A10:A11");
         er.save();
         qDebug() << "cell value:" << er.readCell(4, 4);
     } else {
