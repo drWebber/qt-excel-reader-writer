@@ -27,12 +27,12 @@ ExcelReader::~ExcelReader()
     delete excel;
 }
 
-int ExcelReader::sheetsCount()
+int ExcelReader::sheetsCount() const
 {
     return sheets->property("Count").toInt();
 }
 
-int ExcelReader::rowCount()
+int ExcelReader::rowCount() const
 {
     QAxObject *rows = usedRange->querySubObject("Rows");
     int rowsCount = rows->property("Count").toInt();
@@ -40,7 +40,7 @@ int ExcelReader::rowCount()
     return rowsCount;
 }
 
-int ExcelReader::columnCount()
+int ExcelReader::columnCount() const
 {
     QAxObject *columns = usedRange->querySubObject("Columns");
     int colsCount = columns->property("Count").toInt();
@@ -48,7 +48,7 @@ int ExcelReader::columnCount()
     return colsCount;
 }
 
-QVariant ExcelReader::readCell(int row, int column)
+QVariant ExcelReader::readCell(int row, int column) const
 {
     QAxObject *cell = sheet->querySubObject("Cells(int,int)",
                                             row, column);
@@ -57,11 +57,24 @@ QVariant ExcelReader::readCell(int row, int column)
     return value;
 }
 
-int ExcelReader::match(const QString &range, const QString &lookupValue)
+void ExcelReader::writeCell(int row, int column, const QVariant &value) const
+{
+    QAxObject *cell = sheet->querySubObject("Cells(int,int)",
+                                            row, column);
+    cell->setProperty("Value", QVariant(value));
+    delete cell;
+}
+
+void ExcelReader::save() const
+{
+    workbook->dynamicCall("Save()");
+}
+
+int ExcelReader::match(const QString &range, const QString &lookupValue) const
 {
     QString str = "Range(" + range + ")";
-    char *test = (char*)str.toUtf8().data();
-    QAxObject *rng = sheet->querySubObject(test);
+    char *val = (char*)str.toUtf8().data();
+    QAxObject *rng = sheet->querySubObject(val);
     QAxObject *set = rng->querySubObject("Find(const QString&)", lookupValue);
 
     int res = -1;

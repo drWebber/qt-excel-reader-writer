@@ -21,6 +21,10 @@ int main(int argc, char *argv[])
 
         const int COLUMN = 2;
         qDebug() << "cell value:" << er.readCell(match, COLUMN);
+
+        er.writeCell(4,4, "test");
+        er.save();
+        qDebug() << "cell value:" << er.readCell(4, 4);
     } else {
         qDebug() << "file not found";
     }
